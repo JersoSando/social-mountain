@@ -18,6 +18,8 @@ class App extends Component {
     this.updatePost = this.updatePost.bind( this );
     this.deletePost = this.deletePost.bind( this );
     this.createPost = this.createPost.bind( this );
+    this.search = this.search.bind( this );
+
   }
   
   componentDidMount() {
@@ -32,22 +34,31 @@ class App extends Component {
     axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${id}`).then((res) => this.setState({ posts: res.data}))
   }
 
-  createPost() {
-
+  createPost(text) {
+    axios.post('https://practiceapi.devmountain.com/api/posts', {text}).then((res) => this.setState({ posts: res.data}))
   }
 
+  search(text) {
+    axios.get(`https://practiceapi.devmountain.com/api/posts/filter?text=${text}`)
+    .then(res => this.setState({ posts: res.data}))
+  }
   render() {
     const { posts } = this.state;
     // console.log(posts)
 
     return (
       <div className="App__parent">
-        <Header />
+        <Header searchFunction={this.search} />
 
         <section className="App__content">
 
-          <Compose />
-          {posts.map(post => (<Post deletePostFunc={this.deletePost} updatePostFunc={this.updatePost} postInfoObj={post} key={post.id} />))}
+          <Compose createPostFunc={this.createPost} />
+          
+          {posts.map(post => (<Post 
+          deletePostFunc={this.deletePost} 
+          updatePostFunc={this.updatePost} 
+          postInfoObj={post} key={post.id} 
+        />))}
         </section>
       </div>
     );
